@@ -6,36 +6,28 @@
 
 # Features
 
-![Timelines](https://hypernova.gg/vendor-products/harmony/novaweather/Feature_Timelines.png)
-
+### Timelines
 First off, we have Profile Timelines. This allows you to carefully construct your weather system by introducing elements staggered instead of all at once. For example; you could make a heavy rain storm by first making some clouds, then 30 seconds later darkening them, and when they’re done, slowly start rain that increases over 5 minutes until it’s at full strength.
 
 You can play with about 20 weather properties ranging from cloud coverage to fogginess to windspeed, and even override temperatures.
 
-
-![Timelines](https://hypernova.gg/vendor-products/harmony/novaweather/Feature_Zones.png)
-
+### ZoneManager Support
 For the first time, you can now have several separate weather systems active in your world using **Nova Weather**’s support for the ZoneManager plugin. You could make it rain on one island, and make it tropical on another. You could create zones for bosses where the sky darkens with thunderclouds the closer you get, or you could make your admin crib always sunny while the rest of the world is experiencing heavy rain. The possibilities are endless.
 
-
-![Timelines](https://hypernova.gg/vendor-products/harmony/novaweather/Feature_Timed_Commands.png)
-
+### Timed Commands
 Not only are you able to use the Profile Timelines feature to create beautiful and realistic weather patterns, you can also make things happen based on whatever weather you have running.
 
 Using the timeline, you can create a property element or you can create a command element. If you create a command element and place it on the 30 second mark in your timeline, the command will execute when 30 seconds have elapsed in that profile.
 
 Want to spawn a boss when the thunder starts in a thunderstorm? Want to start an event when the rain stops? Want to give everyone some currency when you’ve had fog on for 10 minutes?! You can do that with scheduled commands!
 
-
-![Timelines](https://hypernova.gg/vendor-products/harmony/novaweather/Feature_Share_profiles.png)
-
+### Share your own custom profiles
 All weather systems work on a few simple concepts, and the most important of those are Profiles. Profiles determine what should be shown in the world. You’ll have a profile for Clear, Rain, Fog, etc. These profiles live in your configuration folder as separate files, and are completely interchangeable.
 
 Created a kickass weather profile but hate the hassle of having to mix and match your config files? Just drop ‘em your profile files. They can just drag-and-drop them into their profiles folder, and they’re immediately usable. Share away!
 
 
-![Timelines](https://hypernova.gg/vendor-products/harmony/novaweather/Feature_Advanced_Options.png)
-
+### In-depth Configuration Options
 With advanced features comes some advanced configuration. We’ve tried to make it as simple as possible though, and in the Configuration chapter below we explain what everything does. There’s all sorts of settings to make your weather look amazing, or to optimize the weather system’s performance for lower end machines. You can choose whether or not to use ZoneManager support, you can tweak the amount of times a second the system updates, etc. With a ton of RCON Commands included (20+!) you can even do most of it without ever looking at a JSON file.
 
 The mod installs with a very comprehensive default configuration, created to mimic the native weather system with a bit of a makeover on install so you can just install and forget about it. The default profiles have timelines, and tweaked load chances to bring back some good looking weather types.
@@ -192,10 +184,51 @@ Climates all cycle continuously in the background. Applying a climate to a zone 
 The zone can then sort of connect to that, and hear what the climate is saying, and then show that to the player. This makes it so you can have 10 zones that share 1 climate, saving a ton of processing power.
 
 
-## Configuration files: Configuration.json**
+## Configuration files: Configuration.json
 All right, let’s dive into our first bit of configuration. We’ll first take a look at Configuration.json. Note that this config is subject to change, and the image below may not be a fully accurate depiction of the current state of the config file structure.
 
-[![Nova-Weather-config-file.thumb.png.e7647c3abadfa06c6b019c5c1b71a899.png](https://codefling.com/uploads/monthly_2022_10/Nova-Weather-config-file.thumb.png.e7647c3abadfa06c6b019c5c1b71a899.png)](https://codefling.com/uploads/monthly_2022_10/Nova-Weather-config-file.png.5de9d9e9784c11ffe288bebd9c82559f.png)
+    {
+        "Modification enabled (true/false)": true,
+        "Enable debug logs (true/false)": false,
+        "Global Options": {
+            "Pause weather if server empty (true/false)": false,
+            "Ticks per weather update (1-50)": 1,
+            "Global weather climate": "default"
+        },
+        "ZoneManager options": {
+            "Use ZoneManager zones (true/false)": true,
+            "ZoneManager zone climates": {
+                "17263307": {
+                    "Enabled (true/false)": true,
+                    "Climate": "climate_2",
+                    "Zone transition buffer percentage (1-100)": 45,
+                    "Zone transition buffer max. size (meters)": 50
+                }
+            }
+        },
+        "Climate definitions": {
+            "default": {
+                "Enabled": true,
+                "Profiles": [
+                    {
+                        "Profile": "default_clear",
+                        "Chance (%)": 50
+                    }
+                ]
+            },
+            "climate_2": {
+                "Enabled": true,
+                "Profiles": [
+                    {
+                        "Profile": "default_storm",
+                        "Chance (%)": 50
+                    }
+                ]
+            }
+        }
+    }
+
+This contains the following fields:
 
     Modification enabled (true/false)
 
@@ -236,10 +269,6 @@ The percentage of the zone’s radius which should be used as a transition buffe
     ZoneManager options -> ZoneManager zone climates -> Zone transition buffer max. Size (meters)
 
 With this you can put an absolute limit on the transition buffer size. This works best if you don’t exactly know the dimensions of the zone(s) you’ll be placing. This makes it so that the transition buffer will not go past the given number of meters past the zone’s border. So, if you set the buffer percentage to 50%, but set the max. meters to 10, the buffer will either go to 50% if it’s shorter than 10m, or it will cap at 10m.
-
-See the graphic below for a visual representation, with “%” meaning the buffer zone percentage.
-
-[![Nova-Weather-zone-buffer-explanation.png.9ff2be4e8387080905e2a5850ca660da.png](https://codefling.com/uploads/monthly_2022_10/Nova-Weather-zone-buffer-explanation.png.9ff2be4e8387080905e2a5850ca660da.png)](https://codefling.com/uploads/monthly_2022_10/Nova-Weather-zone-buffer-explanation.png.9ff2be4e8387080905e2a5850ca660da.png "Enlarge image")
 
     Climate definitions
 
@@ -331,39 +360,7 @@ The only property not included in that list that is usable with Nova Weather is 
 
     Steps
 
-This is how you animate a weather profile. Using steps, you can populate the profile’s timeline however you see fit. Remember that fun timeline graphic at the top of the page?
-![Timelines](https://hypernova.gg/vendor-products/harmony/novaweather/timeline.png)
-
-That roughly translates to:
-
-    "Steps": {
-        "5": [
-            {
-                "Type": "Property",
-                "Property": "cloud_coverage",
-                "Value": 0.8,
-                "Fade (seconds)": 120
-            }
-        ],
-        "30": [
-            {
-                "Type": "Property",
-                "Property": "rain",
-                "Value": 1.0,
-                "Fade (seconds)": 120
-            }
-        ],
-        "130": [
-            {
-                "Type": "Property",
-                "Property": "thunder",
-                "Value": 1.0,
-                "Fade (seconds)": 150
-            }
-        ]
-    }
-
-Steps are put at static positions in the timeline by setting it to a specific second. Want rain to come in at the 30 seconds mark? You add a step at “30”.
+This is how you animate a weather profile. Using steps, you can populate the profile’s timeline however you see fit. Steps are put at static positions in the timeline by setting it to a specific second. Want rain to come in at the 30 seconds mark? You add a step at “30”.
 
 A step is animated as well; you can have the rain come in at 30 seconds and have it take 60 seconds to go from just a drop to a full on downpour. It’s all in the fade time.
 
